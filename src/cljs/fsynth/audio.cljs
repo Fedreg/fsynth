@@ -49,7 +49,7 @@
   ([freq octave]
    (build-note freq octave 1))
   ([freq]
-   (build-note freq 1 0.25)))
+   (build-note freq 1 0.125)))
 
 (defn song []
   (mapv #(build-note (hz %) 1 0.25)
@@ -88,23 +88,42 @@
 (defn play-sequence
   "Schedules a sequence of notes to be sent to play-note"
   [notes bpm]
-  (prn "#$#$#$" notes)
   (let [xs       (first notes)
         ys       (rest notes)
         freq     (:frequency xs)
         octave   (:octave xs)
         duration (:duration xs)
         sustain  (* (/ 60 bpm) duration)]
-    (prn "HI" freq octave sustain)
     (play-note freq octave sustain)
     (when-not (empty? ys)
       (js/setTimeout #(play-sequence ys bpm) (* 1000 sustain)))))
 
+(defn modify-notes
+  "Adds the key number to the notes to be played to increase half steps"
+  [notes hs key]
+  (let [coll (key notes)
+        new  (map (fn [n] (if (= 0 n) n (+ n hs))) coll)]
+    new))
+
 (defn play-all-notes [notes bpm]
-  (play-sequence (mapv #(build-note (hz %) 4) (:4 notes)) bpm)
-  (play-sequence (mapv #(build-note (hz %) 3) (:3 notes)) bpm)
-  (play-sequence (mapv #(build-note (hz %) 2) (:2 notes)) bpm)
-  (play-sequence (mapv #(build-note (hz %) 1) (:1 notes)) bpm)
+  "Play all the notes at once"
+  (play-sequence (mapv #(build-note (hz %) 4) (modify-notes notes 0 :16)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 7 :15)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 6 :14)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 5 :13)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 4 :12)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 3 :11)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 2 :10)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 1 :9)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 7 :8)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 6 :7)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 5 :6)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 4 :5)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 3 :4)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 2 :3)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 1 :2)) bpm)
+  (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 0 :1)) bpm)
   )
+
 
 

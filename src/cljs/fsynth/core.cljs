@@ -14,6 +14,7 @@
   {:style
    {:height           "800px"
     :width            "100%"
+    :margin           "0 auto"
     :padding          "100px"
     :background-color "black"}})
 
@@ -28,7 +29,7 @@
    {:box-sizing       "border-box"
     ;; :display          "flex"
     :width            "600px"
-    :height           "600px"
+    :height           "650px"
     :background-color "#000"
     :border           "3px solid #111"}})
   
@@ -70,6 +71,18 @@
 
 (defn sequencer-grid [state]
   [:div seq-container-style
+   [:div note-container-style (map #(note 16 % state) (range 1 17))]
+   [:div note-container-style (map #(note 15 % state) (range 1 17))]
+   [:div note-container-style (map #(note 14 % state) (range 1 17))]
+   [:div note-container-style (map #(note 13 % state) (range 1 17))]
+   [:div note-container-style (map #(note 12 % state) (range 1 17))]
+   [:div note-container-style (map #(note 11 % state) (range 1 17))]
+   [:div note-container-style (map #(note 10 % state) (range 1 17))]
+   [:div note-container-style (map #(note 9 % state) (range 1 17))]
+   [:div note-container-style (map #(note 8 % state) (range 1 17))]
+   [:div note-container-style (map #(note 7 % state) (range 1 17))]
+   [:div note-container-style (map #(note 6 % state) (range 1 17))]
+   [:div note-container-style (map #(note 5 % state) (range 1 17))]
    [:div note-container-style (map #(note 4 % state) (range 1 17))]
    [:div note-container-style (map #(note 3 % state) (range 1 17))]
    [:div note-container-style (map #(note 2 % state) (range 1 17))]
@@ -87,7 +100,6 @@
 
 (defn page [state]
   [:div page-style
-   [:div {:style {:color "white"}} (str @state)]
    (sequencer-grid state)
    (play-button state)
    (scale-selector state)
