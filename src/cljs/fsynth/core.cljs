@@ -13,7 +13,7 @@
 (def page-style
   {:style
    {:height           "800px"
-    :width            "100%"
+    :width            "600px"
     :margin           "0 auto"
     :padding          "100px"
     :background-color "black"}})
@@ -22,6 +22,7 @@
    {:height           "20px"
     :width            "20px"
     :margin           "10px"
+    :border-radius    "10px"
     :background-color (if-not on? "#111" "red")})
 
 (def seq-container-style 
@@ -42,6 +43,9 @@
    :text-align "center"})
 
 (def scale-selector-style
+  {:text-align "center"})
+
+(def wave-selector-style
   {:text-align "center"})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -69,24 +73,35 @@
    [:option {:value :mixolydian} "mixolydian"]
    ])
 
+(defn wave-selector [state]
+  [:select {:multiple false 
+            :style wave-selector-style
+            :value (name (:wave @state))
+            :on-change #(update/update-wave (-> % .-target .-value))}
+   [:option {:value "sine"}     "sine"]
+   [:option {:value "triangle"} "triangle"]
+   [:option {:value "square"}   "square"]
+   [:option {:value "sawtooth"} "sawtooth"]
+   ])
+
 (defn sequencer-grid [state]
   [:div seq-container-style
-   [:div note-container-style (map #(note 16 % state) (range 1 17))]
-   [:div note-container-style (map #(note 15 % state) (range 1 17))]
-   [:div note-container-style (map #(note 14 % state) (range 1 17))]
-   [:div note-container-style (map #(note 13 % state) (range 1 17))]
-   [:div note-container-style (map #(note 12 % state) (range 1 17))]
-   [:div note-container-style (map #(note 11 % state) (range 1 17))]
-   [:div note-container-style (map #(note 10 % state) (range 1 17))]
-   [:div note-container-style (map #(note 9 % state) (range 1 17))]
-   [:div note-container-style (map #(note 8 % state) (range 1 17))]
-   [:div note-container-style (map #(note 7 % state) (range 1 17))]
-   [:div note-container-style (map #(note 6 % state) (range 1 17))]
-   [:div note-container-style (map #(note 5 % state) (range 1 17))]
-   [:div note-container-style (map #(note 4 % state) (range 1 17))]
-   [:div note-container-style (map #(note 3 % state) (range 1 17))]
-   [:div note-container-style (map #(note 2 % state) (range 1 17))]
-   [:div note-container-style (map #(note 1 % state) (range 1 17))]
+   [:div note-container-style (map #(note 16 % state) (range 0 16))]
+   [:div note-container-style (map #(note 15 % state) (range 0 16))]
+   [:div note-container-style (map #(note 14 % state) (range 0 16))]
+   [:div note-container-style (map #(note 13 % state) (range 0 16))]
+   [:div note-container-style (map #(note 12 % state) (range 0 16))]
+   [:div note-container-style (map #(note 11 % state) (range 0 16))]
+   [:div note-container-style (map #(note 10 % state) (range 0 16))]
+   [:div note-container-style (map #(note 9 % state) (range 0 16))]
+   [:div note-container-style (map #(note 8 % state) (range 0 16))]
+   [:div note-container-style (map #(note 7 % state) (range 0 16))]
+   [:div note-container-style (map #(note 6 % state) (range 0 16))]
+   [:div note-container-style (map #(note 5 % state) (range 0 16))]
+   [:div note-container-style (map #(note 4 % state) (range 0 16))]
+   [:div note-container-style (map #(note 3 % state) (range 0 16))]
+   [:div note-container-style (map #(note 2 % state) (range 0 16))]
+   [:div note-container-style (map #(note 1 % state) (range 0 16))]
    ])
 
 (defn bpm-selector [state]
@@ -103,6 +118,7 @@
    (sequencer-grid state)
    (play-button state)
    (scale-selector state)
+   (wave-selector state)
    (bpm-selector state)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;

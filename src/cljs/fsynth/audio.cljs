@@ -26,20 +26,6 @@
     0
     (* 110 (Math/pow 1.059463 (hs n)))))
 
-(defn dur
-  "Note duration based on box number"
-  [box]
-  (case box
-    1 0.125
-    2 0.25
-    3 0.25
-    4 0.5
-    5 0.5 
-    6 1
-    7 1
-    8 2
-    9 2))
-
 (defn build-note
   "Prepares note map to be sent to oscillators"
   ([freq octave duration]
@@ -71,7 +57,7 @@
   [freq octave sustain]
   (let [osc     (.createOscillator ctx)
         vol     (.createGain ctx)
-        wave    "square"]
+        wave    (:wave @state/state)]
     (.connect osc vol)
     (.connect vol (.-destination ctx))
     

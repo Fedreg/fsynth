@@ -15,6 +15,10 @@
   "Changes the state to the selected mode"
   (swap! state/state assoc :mode (keyword mode)))
 
+(defn update-wave [wave]
+  "Changes the state to the selected sound wave"
+  (swap! state/state assoc :wave wave))
+
 (defn update-tempo [bpm]
   "Changes the state to selected bpm"
   (swap! state/state assoc :tempo bpm))
