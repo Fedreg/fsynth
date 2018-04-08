@@ -25,22 +25,37 @@
     :border-radius    "10px"
     :background-color (if-not on? "#111" "red")})
 
-(def seq-container-style 
+(def seq-container-style
   {:style
    {:box-sizing       "border-box"
-    ;; :display          "flex"
     :width            "600px"
     :height           "650px"
     :background-color "#000"
     :border           "3px solid #111"}})
-  
-(def note-container-style 
+
+(def note-container-style
   {:style
    {:display          "flex"}})
 
 (def bpm-selector-style
   {:width "40px"
    :text-align "center"})
+
+(def play-button-style
+  {:width "0"
+   :height "0"
+   :font-size "0"
+   :line-height "0%"
+   :margin "20px"
+   :border-top "15px solid transparent"
+   :border-left "30px solid #333"
+   :border-bottom "15px solid transparent"})
+
+(def stop-button-style
+  {:width "30px"
+   :height "30px"
+   :margin "20px"
+   :background-color "#333"})
 
 (def scale-selector-style
   {:text-align "center"})
@@ -49,7 +64,7 @@
   {:text-align "center"})
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
-;; Views 
+;; Views
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 
 (defn note [row n state]
@@ -61,7 +76,7 @@
            :onClick #(update/update-notes (-> % .-target .-id))}]))
 
 (defn scale-selector [state]
-  [:select {:multiple false 
+  [:select {:multiple false
             :style scale-selector-style
             :value (name (:mode @state))
             :on-change #(update/update-mode (-> % .-target .-value))}
@@ -111,12 +126,20 @@
            :on-input #(update/update-tempo (-> % .-target .-value))}])
 
 (defn play-button [state]
-  [:button {:onClick #(audio/play-all-notes (:notes @state) (:tempo @state))} "PLAY"])
+  [:div {:style (if (:playing? @state) stop-button-style play-button-style)
+         :onClick #(do (update/update-playing-state)
+                       (audio/play-all-notes))}])
+
+(defn clear-button []
+  [:button {:onClick #(do (update/clear-all-notes)
+                          (update/update-playing-state))} "CLEAR ALL"])
 
 (defn page [state]
   [:div page-style
+   [:div {:style {:color "white"}} (str @state/state)]
    (sequencer-grid state)
    (play-button state)
+   (clear-button)
    (scale-selector state)
    (wave-selector state)
    (bpm-selector state)])
@@ -127,7 +150,6 @@
 (defn dev-setup []
   (when ^boolean js/goog.DEBUG
     (enable-console-print!)
-    (println "dev mode")
     ))
 
 (defn reload []

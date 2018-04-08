@@ -5,6 +5,12 @@
 (defn init-notes []
   (into [] (take 17 (repeatedly #(rand-int 2)))))
 
+(defn blank-notes []
+  "Sets all notes to 0"
+  (let [keys (map (fn [n] (keyword (str n))) (range 1 17))
+        vals (into [] (take 16 (repeatedly #(rand-int 0))))]
+    (zipmap keys (repeat 16 vals))))
+
 (def note-rows
   {
    :1 [1 0 0 0 1 0 0 0 1 0 0 0 1 0 0 0 0]
@@ -27,7 +33,9 @@
 
 (def state
   (reagent/atom
-   {:mode :aeolian
-    :tempo 300 
-    :wave "square"
-    :notes note-rows}))
+   {:mode     :aeolian
+    :tempo    300
+    :wave     "square"
+    :playing? false
+    :index    0
+    :notes    note-rows}))

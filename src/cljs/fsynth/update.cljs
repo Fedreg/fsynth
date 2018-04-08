@@ -22,3 +22,14 @@
 (defn update-tempo [bpm]
   "Changes the state to selected bpm"
   (swap! state/state assoc :tempo bpm))
+
+(defn update-playing-state []
+  "Changes the state to selected bpm"
+  (swap! state/state assoc :playing? (if (true? (:playing? @state/state)) false true)))
+
+(defn clear-all-notes []
+  "Clears out all the toggled notes in the sequencer"
+  (swap! state/state assoc :notes (state/blank-notes)))
+
+(defn update-index [index]
+  (swap! state/state assoc :index index))
