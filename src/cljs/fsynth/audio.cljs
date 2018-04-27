@@ -14,17 +14,17 @@
 
 (defn hs
   "Determines how many half-steps in each number by mode"
-  [n]
+  [state n]
   (let [index (-> n str keyword)
-        mode  (:mode @state/state)]
+        mode  (:mode @state)]
     (get-in modes [mode index])))
 
 (defn hz
   "Determines frequency in hz from half-steps above given frequency"
-  [n]
+  [state n]
   (if (= 0 n)
     0
-    (* 110 (Math/pow 1.059463 (hs n)))))
+    (* 110 (Math/pow 1.059463 (hs state n)))))
 
 (defn build-note
   "Prepares note map to be sent to oscillators"
@@ -45,10 +45,10 @@
 
 (defn play-note
   "Creates a synthesizer that connects web audio parts and generates frequency"
-  [freq octave sustain]
+  [state freq octave sustain]
   (let [osc     (.createOscillator ctx)
         vol     (.createGain ctx)
-        wave    (:wave @state/state)]
+        wave    (:wave @state)]
     (.connect osc vol)
     (.connect vol (.-destination ctx))
 
@@ -64,16 +64,17 @@
 
 (defn play-sequence
   "Schedules a sequence of notes to be sent to play-note"
-  [notes bpm]
+  [state notes]
   (let [xs       (first notes)
         ys       (rest notes)
         freq     (:frequency xs)
         octave   (:octave xs)
         duration (:duration xs)
+        bpm      (:tempo @state)
         sustain  (* (/ 60 bpm) duration)]
-    (play-note freq octave sustain)
+    (play-note state freq octave sustain)
     (when-not (empty? ys)
-      (js/setTimeout #(play-sequence ys bpm) (* 1000 sustain)))))
+      (js/setTimeout #(play-sequence state ys) (* 1000 sustain)))))
 
 (defn modify-notes
   "Adds the key number to the notes to be played to increase half steps"
@@ -82,31 +83,32 @@
         new  (map (fn [n] (if (= 0 n) n (+ n hs))) coll)]
     new))
 
-(defn play-all-notes []
+(defn play-all-notes [state]
   "Play all the notes at once"
-  (let [notes    (:notes @state/state)
-        bpm      (:tempo @state/state)
-        playing? (:playing? @state/state)
+  (let [notes    (:notes @state)
+        bpm      (:tempo @state)
+        playing? (:playing? @state)
+        wave     (:wave @state)
         repeat   (* (/ 60 bpm) 1000 16)]
     (when playing?
-    (play-sequence (mapv #(build-note (hz %) 4) (modify-notes notes 0 :16)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 7 :15)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 6 :14)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 5 :13)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 4 :12)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 3 :11)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 2 :10)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 3) (modify-notes notes 1 :9)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 7 :8)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 6 :7)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 5 :6)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 4 :5)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 3 :4)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 2 :3)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 1 :2)) bpm)
-    (play-sequence (mapv #(build-note (hz %) 2) (modify-notes notes 0 :1)) bpm))
+    (play-sequence state (mapv #(build-note (hz state %) 4) (modify-notes notes 1 :16)))
+    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 7 :15)))
+    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 6 :14)))
+    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 5 :13)))
+    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 4 :12)))
+    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 3 :11)))
+    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 2 :10)))
+    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 1 :9)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 7 :8)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 6 :7)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 5 :6)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 4 :5)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 3 :4)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 2 :3)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 1 :2)))
+    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 0 :1))))
     (when playing?
-      (js/setTimeout #(play-all-notes) repeat))
+      (js/setTimeout #(play-all-notes state) repeat))
     ))
 
 

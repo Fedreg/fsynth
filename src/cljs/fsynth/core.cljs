@@ -12,18 +12,23 @@
 
 (def page-style
   {:style
-   {:height           "800px"
-    :width            "600px"
-    :margin           "0 auto"
-    :padding          "100px"
+   {:display          "flex"
+    :height           "800px"
+    :width            "100%" 
+    :margin           "50px"
     :background-color "black"}})
 
-(defn note-style [on?]
+(def sequencer-group-style
+  {:style
+   {:padding "20px"}})
+
+(defn note-style [on? color]
    {:height           "20px"
     :width            "20px"
     :margin           "10px"
     :border-radius    "10px"
-    :background-color (if-not on? "#111" "red")})
+    :transition       "all 0.4s ease"
+    :background-color (if-not on? "#111" color)})
 
 (def seq-container-style
   {:style
@@ -71,15 +76,15 @@
   (let [index (keyword (str row))
         notes (-> @state :notes index)
         on? (when (= 1 (nth notes n)) true)]
-    [:div {:style (note-style on?)
+    [:div {:style (note-style on? (:color @state))
            :id (str row "." n)
-           :onClick #(update/update-notes (-> % .-target .-id))}]))
+           :onClick #(update/update-notes state (-> % .-target .-id))}]))
 
 (defn scale-selector [state]
   [:select {:multiple false
             :style scale-selector-style
             :value (name (:mode @state))
-            :on-change #(update/update-mode (-> % .-target .-value))}
+            :on-change #(update/update-mode state (-> % .-target .-value))}
    [:option {:value :ionian}     "major"]
    [:option {:value :aeolian}    "minor"]
    [:option {:value :dorian}     "dorian"]
@@ -92,7 +97,7 @@
   [:select {:multiple false 
             :style wave-selector-style
             :value (name (:wave @state))
-            :on-change #(update/update-wave (-> % .-target .-value))}
+            :on-change #(update/update-wave state (-> % .-target .-value))}
    [:option {:value "sine"}     "sine"]
    [:option {:value "triangle"} "triangle"]
    [:option {:value "square"}   "square"]
@@ -123,26 +128,30 @@
   [:input {:type "text"
            :style bpm-selector-style
            :value (:tempo @state)
-           :on-input #(update/update-tempo (-> % .-target .-value))}])
+           :on-input #(update/update-tempo state (-> % .-target .-value))}])
 
 (defn play-button [state]
   [:div {:style (if (:playing? @state) stop-button-style play-button-style)
-         :onClick #(do (update/update-playing-state)
-                       (audio/play-all-notes))}])
+         :onClick #(do (update/update-playing-state state)
+                       (audio/play-all-notes state))}])
 
-(defn clear-button []
-  [:button {:onClick #(do (update/clear-all-notes)
-                          (update/update-playing-state))} "CLEAR ALL"])
+(defn clear-button [state]
+  [:button {:onClick #(do (update/clear-all-notes state))} "CLEAR ALL"])
 
-(defn page [state]
+(defn sequencer-group [state]
+  [:div sequencer-group-style
+  (sequencer-grid state)
+  (play-button state)
+  (clear-button state)
+  (scale-selector state)
+  (wave-selector state)
+  (bpm-selector state)])
+
+(defn page []
   [:div page-style
-   [:div {:style {:color "white"}} (str @state/state)]
-   (sequencer-grid state)
-   (play-button state)
-   (clear-button)
-   (scale-selector state)
-   (wave-selector state)
-   (bpm-selector state)])
+   [:div {:style {:color "white"}} (with-out-str (cljs.pprint/pprint @state/state1))]
+   (sequencer-group state/state1)
+   (sequencer-group state/state2)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Initialize App
@@ -153,7 +162,7 @@
     ))
 
 (defn reload []
-  (reagent/render [page state/state]
+  (reagent/render [page]
                   (.getElementById js/document "app")))
 
 (defn ^:export main []
