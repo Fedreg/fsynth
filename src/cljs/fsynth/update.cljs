@@ -34,4 +34,9 @@
   (swap! state assoc :playing? false))
 
 (defn update-index [state index]
+  "Increases the index to control lighting effect"
   (swap! state assoc :index index))
+
+(defn enlarge [state]
+  "Controls if the sequencer window is enlarged or not"
+  (swap! state assoc :zoom? (if (true? (:zoom? @state)) false true)))

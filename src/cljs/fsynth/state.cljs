@@ -52,9 +52,10 @@
    {:mode     :aeolian
     :tempo    300
     :wave     "square"
-    :color    "red"
+    :color    "purple"
     :playing? false
-    :index    0
+    :index    1
+    :zoom?    false
     :notes    note-rows1}))
 
 (def state2
@@ -62,7 +63,8 @@
    {:mode     :aeolian
     :tempo    300
     :wave     "square"
-    :color    "deeppink"
+    :color    "teal"
     :playing? false
-    :index    0
+    :index    1
+    :zoom?    false
     :notes    note-rows2}))

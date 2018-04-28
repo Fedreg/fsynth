@@ -1,7 +1,8 @@
 (ns fsynth.audio
   (:require
-   [reagent.core :as reagent]
-   [fsynth.state :as state]
+   [reagent.core  :as reagent]
+   [fsynth.state  :as state]
+   [fsynth.update :as update]
    ))
 
 (def modes
@@ -64,17 +65,24 @@
 
 (defn play-sequence
   "Schedules a sequence of notes to be sent to play-note"
-  [state notes]
+  [state notes & index]
   (let [xs       (first notes)
         ys       (rest notes)
         freq     (:frequency xs)
         octave   (:octave xs)
         duration (:duration xs)
         bpm      (:tempo @state)
+        indx     (first index)
         sustain  (* (/ 60 bpm) duration)]
     (play-note state freq octave sustain)
     (when-not (empty? ys)
-      (js/setTimeout #(play-sequence state ys) (* 1000 sustain)))))
+      (js/setTimeout
+       #(if index
+          (do
+            (play-sequence state ys (inc indx))
+            (update/update-index state (inc indx)))
+          (play-sequence state ys))
+       (* 1000 sustain)))))
 
 (defn modify-notes
   "Adds the key number to the notes to be played to increase half steps"
@@ -90,8 +98,9 @@
         playing? (:playing? @state)
         wave     (:wave @state)
         repeat   (* (/ 60 bpm) 1000 16)]
+    (update/update-index state 1)
     (when playing?
-    (play-sequence state (mapv #(build-note (hz state %) 4) (modify-notes notes 1 :16)))
+    (play-sequence state (mapv #(build-note (hz state %) 4) (modify-notes notes 1 :16)) 1)
     (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 7 :15)))
     (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 6 :14)))
     (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 5 :13)))
