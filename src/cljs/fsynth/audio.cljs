@@ -80,7 +80,7 @@
        #(if index
           (do
             (play-sequence state ys (inc indx))
-            (update/update-index state (inc indx)))
+            #_(update/update-index state (inc indx)))
           (play-sequence state ys))
        (* 1000 sustain)))))
 
@@ -93,6 +93,7 @@
 
 (defn play-all-notes [state]
   "Play all the notes at once"
+  (prn "AHHAHA")
   (let [notes    (:notes @state)
         bpm      (:tempo @state)
         playing? (:playing? @state)

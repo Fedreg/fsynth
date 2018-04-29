@@ -9,7 +9,6 @@
         row    (keyword (first cur))
         n      (js/parseInt (last cur))
         cur    (get-in @state [:notes row n])]
-    (prn "ROW N CUR" row n cur)
     (swap! state update-in [:notes row n] (if (= 0 cur) inc dec))))
 
 (defn update-mode [state mode]
@@ -39,4 +38,5 @@
 
 (defn enlarge [state]
   "Controls if the sequencer window is enlarged or not"
+  (prn "ZOOM" (:zoom? @state))
   (swap! state assoc :zoom? (if (true? (:zoom? @state)) false true)))

@@ -6,9 +6,11 @@
    [fsynth.update :as update]
    ))
 
-(defn note-brightness [on? indx pos]
+(defn note-brightness [on? state pos]
   (if
-    (and (= (inc pos) indx) on?)
+      (and (= (inc pos) (:index @state))
+           (:playing? @state)
+           on?)
     "brightness(3)"
     "brightness(1)"))
 
@@ -26,29 +28,28 @@
 
 (defn sequencer-group-style [state]
   (let [zoom? (:zoom? @state)]
-  {:style
-   {;:transform  (str "scale(" (if zoom? "1)" "0.5)"))
-    ;; :position   (if zoom? "absolute" "relative")
-    ;; :top        (if zoom? "100px" 0)
-    ;; :left       (if zoom? "500px" 0)
-    :transition "all 0.3s ease"
-    :padding    "20px"}}))
+    {:style 
+     {:transform  (str "scale(" (if zoom? "1)" "0.25)"))
+      :position   "absolute" 
+      :top        (if zoom? "100px" (:y @state))
+      :left       (if zoom? "calc(50% - 200px)" "-200px")
+      :transition "all 0.3s ease"
+      :padding    "20px"}}))
 
 (defn note-style [on? state pos]
    {:height           "20px"
     :width            "20px"
     :margin           "10px"
-    :filter           (note-brightness on? (:index @state) pos)
+    :filter           (note-brightness on? state pos)
     :border-radius    "10px"
     :background-color (if-not on? "#111" (:color @state))})
 
 (def seq-container-style
-  {:style
-   {:box-sizing       "border-box"
-    :width            "600px"
-    :height           "650px"
-    :background-color "#000"
-    :border           "3px solid #111"}})
+  {:box-sizing       "border-box"
+   :width            "600px"
+   :height           "650px"
+   :background-color "#000"
+   :border           "3px solid #111"})
 
 (def note-container-style
   {:style
@@ -105,6 +106,10 @@
    :font-size  "10px"
    :text-align "center"})
 
+(defn audio-controls-style [state]
+  {:style
+   {:visibility (if (:zoom? @state) "visible" "hidden")}})
+
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Views
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
@@ -142,7 +147,8 @@
    ])
 
 (defn sequencer-grid [state]
-  [:div seq-container-style
+  [:div {:style seq-container-style
+         :onClick #(if-not (:zoom? @state) (update/enlarge state))}
    [:div note-container-style (map #(note 16 % state) (range 0 16))]
    [:div note-container-style (map #(note 15 % state) (range 0 16))]
    [:div note-container-style (map #(note 14 % state) (range 0 16))]
@@ -180,21 +186,27 @@
   [:span {:style enlarger-button-style
           :onClick #(update/enlarge state)} "ZOOM"])
 
-(defn sequencer-group [state]
-  [:div (sequencer-group-style state)
-   (sequencer-grid state)
-   (play-button state)
+(defn audio-controls [state]
+  [:div (audio-controls-style state)
    (scale-selector state)
    (wave-selector state)
    (enlarger-button state)
    (clear-button state)
    (bpm-selector state)])
 
+(defn sequencer-group [state]
+  [:div (sequencer-group-style state)
+   (sequencer-grid state)
+   (play-button state)
+   (audio-controls state)])
+
 (defn page []
   [:div page-style
-   ;; [:div {:style {:color "white"}} (with-out-str (cljs.pprint/pprint @state/state1))]
+   ;; [:div {:style {:color "white"}} (with-out-str (prn @state/state1))]
    (sequencer-group state/state1)
-   (sequencer-group state/state2)])
+   (sequencer-group state/state2)
+   (sequencer-group state/state3)
+   (sequencer-group state/state4)])
 
 ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
 ;; Initialize App
