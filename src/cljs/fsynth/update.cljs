@@ -38,5 +38,4 @@
 
 (defn enlarge [state]
   "Controls if the sequencer window is enlarged or not"
-  (prn "ZOOM" (:zoom? @state))
   (swap! state assoc :zoom? (if (true? (:zoom? @state)) false true)))

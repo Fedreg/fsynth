@@ -21,20 +21,22 @@
 (def page-style
   {:style
    {:display          "flex"
+    :justify-content  "center"
     :height           "800px"
     :width            "100%" 
-    :margin           "50px"
+    :margin-top       "50px"
     :background-color "black"}})
 
 (defn sequencer-group-style [state]
   (let [zoom? (:zoom? @state)]
     {:style 
-     {:transform  (str "scale(" (if zoom? "1)" "0.25)"))
-      :position   "absolute" 
-      :top        (if zoom? "100px" (:y @state))
-      :left       (if zoom? "calc(50% - 200px)" "-200px")
-      :transition "all 0.3s ease"
-      :padding    "20px"}}))
+     {:transform  (str "scale(" (if zoom? "1)" "0.5)"))
+      :position   (if zoom? "absolute" "relative")
+      :top        (if zoom? "100px" 0)
+      :left       (if zoom? "calc(50% - 200px)" 0)
+      :z-index    (if zoom? 10 0)
+      :margin     (if zoom? 0 "-120px")
+      :transition "all 0.1s ease-out"}}))
 
 (defn note-style [on? state pos]
    {:height           "20px"
@@ -180,11 +182,11 @@
 
 (defn clear-button [state]
   [:span {:style clear-button-style
-         :onClick #(do (update/clear-all-notes state))} "CLEAR ALL"])
+         :onClick #(do (update/clear-all-notes state))} "CLEAR"])
 
 (defn enlarger-button [state]
   [:span {:style enlarger-button-style
-          :onClick #(update/enlarge state)} "ZOOM"])
+          :onClick #(update/enlarge state)} "MINIMIZE"])
 
 (defn audio-controls [state]
   [:div (audio-controls-style state)
@@ -202,7 +204,8 @@
 
 (defn page []
   [:div page-style
-   ;; [:div {:style {:color "white"}} (with-out-str (prn @state/state1))]
+   ;; [:div {:style {:color "white"}} (with-out-str (prn state/all-states))]
+   [:div {:onClick #(audio/master-play (map deref state/all-states)) :style {:color "#fff"}} "PLAY!!!!"]
    (sequencer-group state/state1)
    (sequencer-group state/state2)
    (sequencer-group state/state3)

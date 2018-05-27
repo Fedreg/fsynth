@@ -60,6 +60,7 @@
     (set! (.-value  (.-frequency osc)) (* freq octave))
     (set! (.-type osc) wave)
 
+    (prn "time" (.-currentTime ctx))
     (.start osc (.-currentTime ctx))
     (.stop osc (+ (.-currentTime ctx) sustain 0.1))))
 
@@ -93,7 +94,6 @@
 
 (defn play-all-notes [state]
   "Play all the notes at once"
-  (prn "AHHAHA")
   (let [notes    (:notes @state)
         bpm      (:tempo @state)
         playing? (:playing? @state)
@@ -101,24 +101,34 @@
         repeat   (* (/ 60 bpm) 1000 16)]
     (update/update-index state 1)
     (when playing?
-    (play-sequence state (mapv #(build-note (hz state %) 4) (modify-notes notes 1 :16)) 1)
-    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 7 :15)))
-    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 6 :14)))
-    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 5 :13)))
-    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 4 :12)))
-    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 3 :11)))
-    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 2 :10)))
-    (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 1 :9)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 7 :8)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 6 :7)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 5 :6)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 4 :5)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 3 :4)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 2 :3)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 1 :2)))
-    (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 0 :1))))
+      (play-sequence state (mapv #(build-note (hz state %) 4) (modify-notes notes 1 :16)) 1)
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 7 :15)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 6 :14)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 5 :13)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 4 :12)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 3 :11)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 2 :10)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 1 :9)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 7 :8)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 6 :7)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 5 :6)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 4 :5)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 3 :4)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 2 :3)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 1 :2)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 0 :1))))
     (when playing?
-      (js/setTimeout #(play-all-notes state) repeat))
-    ))
+      (js/setTimeout #(play-all-notes state) repeat))))
 
+(defn master-play [state]
+  "Master play button toggles play on all sequencers simultaneously"
+  (map play-all-notes state)
+  )
+  ;; (play-all-notes state/state1)
+  ;; (prn (map deref state/all-states))
+         ;; (map #(update/update-playing-state %) state/all-states))
+       ;; state/all-states))
 
+(defn master-stop []
+  "Master stop button toggles stop on all sequencers"
+  (map #(update/update-playing-state %) state/all-states))
