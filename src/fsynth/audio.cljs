@@ -81,7 +81,7 @@
        #(if index
           (do
             (play-sequence state ys (inc indx))
-            #_(update/update-index state (inc indx)))
+            (update/update-index state (inc indx)))
           (play-sequence state ys))
        (* 1000 sustain)))))
 

@@ -9,7 +9,7 @@
 
 (defn note-brightness [on? state pos]
   (if
-      (and (= (inc pos) (:index @state))
+      (and (= pos (:index @state))
            (:playing? @state)
            on?)
     "brightness(3)"
@@ -23,9 +23,8 @@
   {:style
    {:display          "flex"
     :justify-content  "center"
-    :height           "800px"
+    :height           "100vh"
     :width            "100%" 
-    :margin-top       "50px"
     :background-color "black"}})
 
 (defn sequencer-group-style [state]
@@ -43,6 +42,7 @@
    {:height           "20px"
     :width            "20px"
     :margin           "10px"
+    ;; NOTE: Comment this filter out to imporove performance
     :filter           (note-brightness on? state pos)
     :border-radius    "10px"
     :background-color (if-not on? "#111" (:color @state))})
