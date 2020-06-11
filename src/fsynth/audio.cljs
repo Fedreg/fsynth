@@ -60,7 +60,7 @@
     (set! (.-value  (.-frequency osc)) (* freq octave))
     (set! (.-type osc) wave)
 
-    (prn "time" (.-currentTime ctx))
+    ;; (prn "time" (.-currentTime ctx))
     (.start osc (.-currentTime ctx))
     (.stop osc (+ (.-currentTime ctx) sustain 0.1))))
 
@@ -120,15 +120,14 @@
     (when playing?
       (js/setTimeout #(play-all-notes state) repeat))))
 
-(defn master-play [state]
+(defn master-play []
   "Master play button toggles play on all sequencers simultaneously"
-  (map play-all-notes state)
-  )
-  ;; (play-all-notes state/state1)
-  ;; (prn (map deref state/all-states))
-         ;; (map #(update/update-playing-state %) state/all-states))
-       ;; state/all-states))
+  (mapv
+   (fn [s]
+     (update/update-playing-state s)
+     (play-all-notes s)) 
+   state/all-states))
 
 (defn master-stop []
   "Master stop button toggles stop on all sequencers"
-  (map #(update/update-playing-state %) state/all-states))
+  (mapv #(update/update-playing-state %) state/all-states))
