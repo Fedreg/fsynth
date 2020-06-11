@@ -1,5 +1,10 @@
 # fsynth
 
+A 4 part synth using Web Audio API and Clojurescript.  Just a toy experiment.
+
+![4 parts](https://github.com/fedreg/fsynth/blob/master/resources/preview1.png?raw=true)
+![part editor view](https://github.com/fedreg/fsynth/blob/master/resources/preview2.png?raw=true)
+
 ### Development mode
 To start the Figwheel compiler, navigate to the project folder and run the following command in the terminal:
 
