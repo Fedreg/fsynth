@@ -203,10 +203,15 @@
    (play-button state)
    (audio-controls state)])
 
+(defn play-button-label [state]
+  (if (some? (filter (fn [s] (false? (:playing @s))) state))
+    "PLAY"
+    "STOP"))
+
 (defn page []
   [:div page-style
-   ;; [:div {:style {:color "white"}} (with-out-str (prn state/all-states))]
-   [:div {:onClick #(audio/master-play (map deref state/all-states)) :style {:color "#fff"}} "PLAY!!!!"]
+   ;; [:div {:style {:color "white"}} (with-out-str (prn (mapv (fn [s] (:playing? @s)) state/all-states)))]
+   [:button {:onClick #(audio/master-play) :style {:color "#fff" :height 25 :background-color "#333"}} (play-button-label state/all-states)]
    (sequencer-group state/state1)
    (sequencer-group state/state2)
    (sequencer-group state/state3)
@@ -221,7 +226,7 @@
     ))
 
 (defn mount-root []
-  (d/render [page state/state] (.getElementById js/document "app")))
+  (d/render [page] (.getElementById js/document "app")))
 
 (defn init! []
   (dev-setup)
