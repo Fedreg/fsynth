@@ -1,33 +1,23 @@
 # fsynth
 
-A [reagent](https://github.com/reagent-project/reagent) application designed to ... well, that part is up to you.
-
-## Development Mode
-
-### Start Cider from Emacs:
-
-Put this in your Emacs config file:
+### Development mode
+To start the Figwheel compiler, navigate to the project folder and run the following command in the terminal:
 
 ```
-(setq cider-cljs-lein-repl "(do (use 'figwheel-sidecar.repl-api) (start-figwheel!) (cljs-repl))")
-```
-
-Navigate to a clojurescript file and start a figwheel REPL with `cider-jack-in-clojurescript` or (`C-c M-J`)
-
-### Run application:
-
-```
-lein clean
-lein figwheel dev
+lein figwheel
 ```
 
 Figwheel will automatically push cljs changes to the browser.
+Once Figwheel starts up, you should be able to open the `public/index.html` page in the browser.
 
-Wait a bit, then browse to [http://localhost:3449](http://localhost:3449).
+### REPL
 
-## Production Build
+The project is setup to start nREPL on port `7002` once Figwheel starts.
+Once you connect to the nREPL, run `(cljs)` to switch to the ClojureScript REPL.
+
+### Building for production
 
 ```
 lein clean
-lein cljsbuild once min
+lein package
 ```

@@ -1,6 +1,7 @@
 (ns fsynth.core
   (:require
    [reagent.core  :as reagent]
+   [reagent.dom   :as d]
    [fsynth.audio  :as audio]
    [fsynth.state  :as state]
    [fsynth.update :as update]
@@ -219,10 +220,9 @@
     (enable-console-print!)
     ))
 
-(defn reload []
-  (reagent/render [page]
-                  (.getElementById js/document "app")))
+(defn mount-root []
+  (d/render [page state/state] (.getElementById js/document "app")))
 
-(defn ^:export main []
+(defn init! []
   (dev-setup)
-  (reload))
+  (mount-root))
