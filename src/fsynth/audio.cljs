@@ -101,27 +101,22 @@
         repeat   (* (/ 60 bpm) 1000 16)]
     (update/update-index state 1)
     (when playing?
-      (mapv 
-       (fn [[octave half-steps row]]
-         (play-sequence 
-          state 
-          (mapv #(build-note (hz state %) octave) (modify-notes notes half-steps row))))
-       [[4 1 :16]
-        [2 7 :15]
-        [2 6 :14]
-        [2 5 :13]
-        [2 4 :12]
-        [2 3 :11]
-        [2 2 :10]
-        [2 1 :9 ]
-        [1 7 :8 ]
-        [1 6 :7 ]
-        [1 5 :6 ]
-        [1 4 :5 ]
-        [1 3 :4 ]
-        [1 2 :3 ]
-        [1 1 :2 ]
-        [1 0 :2 ]]))
+      (play-sequence state (mapv #(build-note (hz state %) 4) (modify-notes notes 1 :16)) 1)
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 7 :15)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 6 :14)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 5 :13)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 4 :12)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 3 :11)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 2 :10)))
+      (play-sequence state (mapv #(build-note (hz state %) 2) (modify-notes notes 1 :9)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 7 :8)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 6 :7)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 5 :6)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 4 :5)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 3 :4)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 2 :3)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 1 :2)))
+      (play-sequence state (mapv #(build-note (hz state %) 1) (modify-notes notes 0 :1))))
     (when playing?
       (js/setTimeout #(play-all-notes state) repeat))))
 

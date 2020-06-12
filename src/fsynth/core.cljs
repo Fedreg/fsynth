@@ -120,7 +120,7 @@
 (defn note [row n state]
   (let [index (keyword (str row))
         notes (-> @state :notes index)
-        on? (when (= 1 (nth notes n)) true)]
+        on?   (= 1 (nth notes n))]
     [:div {:style (note-style on? state n)
            :id (str row "." n)
            :onClick #(update/update-notes state (-> % .-target .-id))}]))
