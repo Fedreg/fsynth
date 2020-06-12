@@ -150,25 +150,12 @@
    ])
 
 (defn sequencer-grid [state]
-  [:div {:style seq-container-style
+  [:div {:style   seq-container-style
          :onClick #(if-not (:zoom? @state) (update/enlarge state))}
-   [:div note-container-style (map #(note 16 % state) (range 0 16))]
-   [:div note-container-style (map #(note 15 % state) (range 0 16))]
-   [:div note-container-style (map #(note 14 % state) (range 0 16))]
-   [:div note-container-style (map #(note 13 % state) (range 0 16))]
-   [:div note-container-style (map #(note 12 % state) (range 0 16))]
-   [:div note-container-style (map #(note 11 % state) (range 0 16))]
-   [:div note-container-style (map #(note 10 % state) (range 0 16))]
-   [:div note-container-style (map #(note 9 % state) (range 0 16))]
-   [:div note-container-style (map #(note 8 % state) (range 0 16))]
-   [:div note-container-style (map #(note 7 % state) (range 0 16))]
-   [:div note-container-style (map #(note 6 % state) (range 0 16))]
-   [:div note-container-style (map #(note 5 % state) (range 0 16))]
-   [:div note-container-style (map #(note 4 % state) (range 0 16))]
-   [:div note-container-style (map #(note 3 % state) (range 0 16))]
-   [:div note-container-style (map #(note 2 % state) (range 0 16))]
-   [:div note-container-style (map #(note 1 % state) (range 0 16))]
-   ])
+   (cons :div 
+         (mapv (fn [n]
+                 [:div note-container-style (map (fn [b] (note n b state)) (range 0 16))])
+               (reverse (range 1 17))))])
 
 (defn bpm-selector [state]
   [:input {:type "text"
