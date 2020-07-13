@@ -85,49 +85,47 @@
 
 (def state1
   (reagent/atom
-   {:mode     :aeolian
-    :tempo    300
-    :wave     "sawtooth"
+   {;:wave     "sawtooth"
     :color    "#3286aa"
     :playing? false
-    :index    1
     :zoom?    false 
     :notes    note-rows1}))
 
 (def state2
   (reagent/atom
-   {:mode     :aeolian
-    :tempo    300
-    :wave     "square"
+   {;:wave     "square"
     :color    "deeppink"
     :playing? false
-    :index    1
     :zoom?    false
     :notes    note-rows2}))
 
 (def state3
   (reagent/atom
-   {:mode     :aeolian
-    :tempo    300
-    :wave     "sawtooth"
+   {;:wave     "sawtooth"
     :color    "teal"
     :playing? false
-    :index    1
     :zoom?    false
     :notes    note-rows3}))
 
 (def state4
   (reagent/atom
-   {:mode     :aeolian
-    :tempo    300
-    :wave     "triangle"
+   {;:wave     "triangle"
     :color    "#bbb"
     :playing? false
-    :index    1
     :zoom?    false
     :notes    note-rows4}))
 
-(def all-states
-  [state1 state2 state3 state4])
+(def global-state
+  (reagent/atom
+   {:playing?            false
+    :mode                :aeolian
+    :wave                "sawtooth"
+    :index               1
+    :tempo               300
+    :lookahead           1000
+    :schedule-ahead-time 0.1
+    :next-note-time      0.0
+    :all-states
+  [state1 state2 state3 state4]}))
 
 

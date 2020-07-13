@@ -11,17 +11,17 @@
         cur    (get-in @state [:notes row n])]
     (swap! state update-in [:notes row n] (if (= 0 cur) inc dec))))
 
-(defn update-mode [state mode]
+(defn update-mode [mode]
   "Changes the state to the selected mode"
-  (swap! state assoc :mode (keyword mode)))
+  (swap! state/global-state assoc :mode (keyword mode)))
 
 (defn update-wave [state wave]
   "Changes the state to the selected sound wave"
   (swap! state assoc :wave wave))
 
-(defn update-tempo [state bpm]
+(defn update-tempo [bpm]
   "Changes the state to selected bpm"
-  (swap! state assoc :tempo bpm))
+  (swap! state/global-state assoc :tempo bpm))
 
 (defn update-playing-state [state]
   "Changes the state to playing or not"
@@ -32,9 +32,9 @@
   (swap! state assoc :notes (state/blank-notes))
   (swap! state assoc :playing? false))
 
-(defn update-index [state index]
+(defn update-index [index]
   "Increases the index to control lighting effect"
-  (swap! state assoc :index index))
+  (swap! state/global-state assoc :index index))
 
 (defn enlarge [state]
   "Controls if the sequencer window is enlarged or not"

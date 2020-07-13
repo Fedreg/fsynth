@@ -9,7 +9,7 @@
 
 (defn note-brightness [on? state pos]
   (if
-      (and (= pos (:index @state))
+      (and (= pos (:index @state/global-state))
            (:playing? @state)
            on?)
     "brightness(3)"
@@ -43,7 +43,7 @@
     :width            "20px"
     :margin           "10px"
     ;; NOTE: Comment this filter out to imporove performance
-    :filter           (note-brightness on? state pos)
+    ;; :filter           (note-brightness on? state pos)
     :border-radius    "10px"
     :background-color (if-not on? "#111" (:color @state))})
 
@@ -60,6 +60,7 @@
 
 (def bpm-selector-style
   {:width            "40px"
+   :height           "15px"
    :color            "#fff"
    :border           "1px solid #fff"
    :background-color "#000"
@@ -95,7 +96,8 @@
    :text-align "center"})
 
 (def scale-selector-style
-  {:text-align "center"})
+  {:text-align "center"
+   :height      "15px"})
 
 (def wave-selector-style
   {:text-align "center"})
@@ -122,14 +124,15 @@
         notes (-> @state :notes index)
         on?   (= 1 (nth notes n))]
     [:div {:style (note-style on? state n)
+           :key (rand-int 1000000)
            :id (str row "." n)
            :onClick #(update/update-notes state (-> % .-target .-id))}]))
 
-(defn scale-selector [state]
+(defn scale-selector []
   [:select {:multiple false
             :style scale-selector-style
-            :value (name (:mode @state))
-            :on-change #(update/update-mode state (-> % .-target .-value))}
+            :value (:mode @state/global-state)
+            :on-change #(update/update-mode (-> % .-target .-value))}
    [:option {:value :ionian}     "major"]
    [:option {:value :aeolian}    "minor"]
    [:option {:value :dorian}     "dorian"]
@@ -141,7 +144,7 @@
 (defn wave-selector [state]
   [:select {:multiple false 
             :style wave-selector-style
-            :value (name (:wave @state))
+            :value (name (or (:wave @state) ""))
             :on-change #(update/update-wave state (-> % .-target .-value))}
    [:option {:value "sine"}     "sine"]
    [:option {:value "triangle"} "triangle"]
@@ -154,14 +157,15 @@
          :onClick #(if-not (:zoom? @state) (update/enlarge state))}
    (cons :div 
          (mapv (fn [n]
-                 [:div note-container-style (map (fn [b] (note n b state)) (range 0 16))])
+                 [:div (assoc note-container-style :key (rand-int 1000000))
+                  (doall (map (fn [b] (note n b state)) (range 0 16)))])
                (reverse (range 1 17))))])
 
-(defn bpm-selector [state]
+(defn bpm-selector []
   [:input {:type "text"
            :style bpm-selector-style
-           :value (:tempo @state)
-           :on-input #(update/update-tempo state (-> % .-target .-value))}])
+           :value (:tempo @state/global-state)
+           :on-input #(update/update-tempo (-> % .-target .-value))}])
 
 (defn play-button [state]
   [:div {:style (if (:playing? @state) stop-button-style play-button-style)
@@ -178,11 +182,9 @@
 
 (defn audio-controls [state]
   [:div (audio-controls-style state)
-   (scale-selector state)
    (wave-selector state)
    (enlarger-button state)
-   (clear-button state)
-   (bpm-selector state)])
+   (clear-button state)])
 
 (defn sequencer-group [state]
   [:div (sequencer-group-style state)
@@ -198,7 +200,9 @@
 (defn page []
   [:div page-style
    ;; [:div {:style {:color "white"}} (with-out-str (prn (mapv (fn [s] (:playing? @s)) state/all-states)))]
-   [:button {:onClick #(audio/master-play) :style {:color "#fff" :height 25 :background-color "#333"}} (play-button-label state/all-states)]
+   [:button {:onClick #(audio/master-play) :style {:color "#fff" :height 25 :background-color "#333"}} (play-button-label (:all-states state/global-state))]
+   [bpm-selector]
+   (scale-selector)
    (sequencer-group state/state1)
    (sequencer-group state/state2)
    (sequencer-group state/state3)
